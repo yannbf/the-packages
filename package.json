@@ -5,6 +5,19 @@
     "packages/*"
   ],
   "devDependencies": {
-    "lerna": "^5.5.2"
+    "lerna": "^5.5.2",
+    "auto": "^10.37.6"
+  },
+  "scripts": {
+    "release": "auto shipit"
+  },
+  "repository": "yannbf/the-packages",
+  "author": "Yann Braga <yannbf@gmail.com>",
+  "auto": {
+    "plugins": [
+      "npm",
+      "first-time-contributor",
+      "released"
+    ]
   }
 }
