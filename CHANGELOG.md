@@ -1,3 +1,16 @@
+# (Fri Sep 30 2022)
+
+#### 🐛 Bug Fix
+
+- `@hipster/first-package@0.0.3`
+  - add functionality to first package [#3](https://github.com/yannbf/the-packages/pull/3) ([@yannbf](https://github.com/yannbf))
+
+#### Authors: 1
+
+- Yann Braga ([@yannbf](https://github.com/yannbf))
+
+---
+
 # (Thu Sep 29 2022)
 
 #### ⚠️ Pushed to `main`
