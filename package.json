@@ -16,7 +16,6 @@
   "auto": {
     "plugins": [
       "npm",
-      "first-time-contributor",
       "released"
     ]
   }
