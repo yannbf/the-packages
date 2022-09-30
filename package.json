@@ -9,14 +9,14 @@
     "auto": "^10.37.6"
   },
   "scripts": {
-    "release": "auto shipit"
+    "release": "auto shipit",
+    "build-packages": "lerna run build --parallel"
   },
   "repository": "yannbf/the-packages",
   "author": "Yann Braga <yannbf@gmail.com>",
   "auto": {
     "plugins": [
       "npm",
-      "first-time-contributor",
       "released"
     ]
   }
