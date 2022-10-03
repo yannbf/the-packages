@@ -1,3 +1,16 @@
+# (Mon Oct 03 2022)
+
+#### 🐛 Bug Fix
+
+- `@hipster/second-package@0.0.3`
+  - Change second package [#4](https://github.com/yannbf/the-packages/pull/4) ([@yannbf](https://github.com/yannbf))
+
+#### Authors: 1
+
+- Yann Braga ([@yannbf](https://github.com/yannbf))
+
+---
+
 # (Fri Sep 30 2022)
 
 #### 🐛 Bug Fix
