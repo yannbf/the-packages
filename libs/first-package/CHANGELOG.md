@@ -1,3 +1,25 @@
+# v0.0.4 (Mon Oct 03 2022)
+
+### Release Notes
+
+#### add mts as default extension ([#5](https://github.com/yannbf/the-packages/pull/5))
+
+#### Features
+Add .mts as default extension
+
+---
+
+#### 🐛 Bug Fix
+
+- add mts as default extension [#5](https://github.com/yannbf/the-packages/pull/5) ([@yannbf](https://github.com/yannbf))
+- add mts as default extension ([@yannbf](https://github.com/yannbf))
+
+#### Authors: 1
+
+- Yann Braga ([@yannbf](https://github.com/yannbf))
+
+---
+
 # v0.0.3 (Fri Sep 30 2022)
 
 #### 🐛 Bug Fix
