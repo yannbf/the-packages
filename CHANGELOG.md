@@ -11,6 +11,30 @@ Add .mts as default extension
 
 #### 🐛 Bug Fix
 
+- `@hipster/second-package@0.0.4`
+  - update package json [#6](https://github.com/yannbf/the-packages/pull/6) ([@yannbf](https://github.com/yannbf))
+- `@hipster/first-package@0.0.5`
+  - add mts as default extension [#5](https://github.com/yannbf/the-packages/pull/5) ([@yannbf](https://github.com/yannbf))
+
+#### Authors: 1
+
+- Yann Braga ([@yannbf](https://github.com/yannbf))
+
+---
+
+# (Mon Oct 03 2022)
+
+### Release Notes
+
+#### add mts as default extension ([#5](https://github.com/yannbf/the-packages/pull/5))
+
+#### Features
+Add .mts as default extension
+
+---
+
+#### 🐛 Bug Fix
+
 - `@hipster/first-package@0.0.4`
   - add mts as default extension [#5](https://github.com/yannbf/the-packages/pull/5) ([@yannbf](https://github.com/yannbf))
 

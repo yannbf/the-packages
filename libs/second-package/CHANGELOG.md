@@ -1,3 +1,16 @@
+# v0.0.4 (Mon Oct 03 2022)
+
+#### 🐛 Bug Fix
+
+- update package json [#6](https://github.com/yannbf/the-packages/pull/6) ([@yannbf](https://github.com/yannbf))
+- update package json ([@yannbf](https://github.com/yannbf))
+
+#### Authors: 1
+
+- Yann Braga ([@yannbf](https://github.com/yannbf))
+
+---
+
 # v0.0.3 (Mon Oct 03 2022)
 
 #### 🐛 Bug Fix
