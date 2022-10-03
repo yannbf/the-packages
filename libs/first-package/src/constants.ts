@@ -3,6 +3,7 @@ export const defaultExtensions = [
   ".cjs",
   ".mjs",
   ".ts",
+  ".mts",
   ".tsx",
   ".jsx",
   ".vue",
