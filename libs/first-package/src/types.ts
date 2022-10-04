@@ -1,8 +1,8 @@
 export interface IstanbulOptions {
   cwd: string;
-  include: string[];
-  exclude: string[];
-  extension: string[];
+  include: string | string[];
+  exclude: string | string[];
+  extension: string | string[];
 }
 
 export interface AddonOptions {
