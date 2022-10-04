@@ -3,12 +3,11 @@ import type { Options } from "@storybook/core-common";
 import { defaultExclude, defaultExtensions } from "./constants";
 import type { AddonOptions } from "./types";
 
-import istanbul from "vite-plugin-istanbul";
-
 export const viteFinal = async (
   viteConfig: Record<string, any>,
   options: Options & AddonOptions
 ) => {
+  const istanbul = require("vite-plugin-istanbul");
   console.log("Adding istanbul plugin to vite config");
   viteConfig.plugins ||= [];
   viteConfig.plugins.push(
