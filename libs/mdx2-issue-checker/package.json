@@ -1,6 +1,6 @@
 {
   "name": "@hipster/mdx2-issue-checker",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Wrapper around remark-cli to make it easier to check for MDX v2 syntax issues",
   "license": "MIT",
   "files": [
