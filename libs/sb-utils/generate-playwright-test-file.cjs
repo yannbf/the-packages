@@ -44,9 +44,9 @@ function prepareImportAndTest(directory, filePath) {
 function traverseDirectories(directory) {
   fs.readdirSync(directory, { withFileTypes: true }).forEach(dirent => {
     const fullPath = path.join(directory, dirent.name);
-    if (dirent.isDirectory()) {
+    if (dirent.isDirectory() && dirent.name !== 'node_modules') {
       traverseDirectories(fullPath);
-    } else if (dirent.isFile() && (dirent.name.endsWith('.stories.portable.ts') || dirent.name.endsWith('.stories.portable.ts'))) {
+    } else if (dirent.isFile() && (dirent.name.endsWith('.stories.portable.ts') || dirent.name.endsWith('.stories.portable.tsx'))) {
       prepareImportAndTest(directory, fullPath);
     }
   });
