@@ -6,7 +6,7 @@
   ],
   "devDependencies": {
     "lerna": "^5.5.2",
-    "auto": "^10.37.6"
+    "auto": "^11.1.6"
   },
   "scripts": {
     "release": "auto shipit",
