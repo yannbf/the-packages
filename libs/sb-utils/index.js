@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const path = require('path')
-const { traverseDirectories } = require('./generate-portable-stories-files.cjs')
-const { generateTests } = require('./generate-playwright-test-file.cjs')
+const { traverseDirectories } = require('./generate-portable-stories-files')
+const { generateTests } = require('./generate-playwright-test-file')
 
 const inputs = process.argv.slice(2)
 const isAllFlags = inputs.every((input) => input.startsWith('-'))
