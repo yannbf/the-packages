@@ -46,16 +46,16 @@ function traverseDirectories(directory) {
     const fullPath = path.join(directory, dirent.name);
     if (dirent.isDirectory()) {
       traverseDirectories(fullPath);
-    } else if (dirent.isFile() && dirent.name.endsWith('.stories.portable.ts')) {
+    } else if (dirent.isFile() && (dirent.name.endsWith('.stories.portable.ts') || dirent.name.endsWith('.stories.portable.ts'))) {
       prepareImportAndTest(directory, fullPath);
     }
   });
 }
 
-function generateTests(directory) {
-  traverseDirectories(directory);
+function generateTests(directory, renderer) {
+  traverseDirectories(directory, renderer);
   const testFilePath = path.join(directory, 'storybook.playwright.tsx');
-  fs.writeFileSync(testFilePath, `// @ts-expect-error missing types\nimport { createTest } from '@storybook/react/experimental-playwright';\nimport { test as base } from '@playwright/experimental-ct-react17';\n\n` + imports + `\n\nconst test = createTest(base);\n\n` + tests, 'utf-8');
+  fs.writeFileSync(testFilePath, `import { createTest } from '@storybook/react/experimental-playwright';\nimport { test as base } from '@playwright/experimental-ct-react17';\n\n` + imports + `\n\nconst test = createTest(base);\n\n` + tests, 'utf-8');
   console.log("Playwright test file generated at: ", testFilePath);
 }
 
