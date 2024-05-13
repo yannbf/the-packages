@@ -13,7 +13,7 @@ function createPortableFile(filePath, renderer) {
     `export default composeStories(stories)\n`
 
   fs.writeFileSync(portableFilePath, content, 'utf8')
-  console.log(`Portable story file created at: ${portableFilePath}`)
+  console.log(`📚 Portable story file created at: ${portableFilePath}`)
 }
 
 function generatePortableStoriesFiles(directory, renderer) {
