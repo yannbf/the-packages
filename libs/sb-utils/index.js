@@ -1,13 +1,16 @@
 #!/usr/bin/env node
-import { traverseDirectories } from './generate-portable-stories-files'
-import { generateTests } from './generate-playwright-test-file'
+const path = require('path')
+const { traverseDirectories } = require('./generate-portable-stories-files.cjs')
+const { generateTests } = require('./generate-playwright-test-file.cjs')
 
 const inputs = process.argv.slice(2)
 const isAllFlags = inputs.every((input) => input.startsWith('-'))
 
-if(isAllFlags) {
+if (isAllFlags) {
   process.argv = process.argv.concat(['.'])
 }
 
-traverseDirectories()
-generateTests()
+const directory = inputs[0] ? path.join(process.cwd(), inputs[0]) : process.cwd()
+
+traverseDirectories(directory)
+generateTests(directory)

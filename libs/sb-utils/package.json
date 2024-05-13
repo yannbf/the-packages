@@ -5,10 +5,12 @@
   "license": "MIT",
   "files": [
     "index.js",
+    "generate-playwright-test-file.js",
+    "generate-portable-stories-files.js",
     "README.md"
   ],
   "homepage": "https://github.com/yannbf/the-packages/tree/main/libs/sb-utils",
-  "type": "module",
+  "type": "commonjs",
   "bin": {
     "generate": "index.js"
   },

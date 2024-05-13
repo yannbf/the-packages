@@ -1,7 +1,5 @@
-import fs from 'fs';
-import path from 'path';
-
-const testFilePath = path.join(srcDirectory, 'storybook.playwright.tsx');
+const fs = require('fs')
+const path = require('path')
 
 let imports = '';
 let tests = '';
@@ -20,8 +18,8 @@ function extractNamedExports(content) {
   return matches;
 }
 
-function prepareImportAndTest(filePath) {
-  const relativePath = path.relative(srcDirectory, filePath);
+function prepareImportAndTest(directory, filePath) {
+  const relativePath = path.relative(directory, filePath);
   const fileName = path.basename(filePath, '.portable.ts');
   const importName = camelCase(fileName.replace('.stories', '')) + 'Stories';
   const importStatement = `import ${importName} from './${relativePath.replace(/\\/g, '/').replace(/\.[^/.]+$/, "")}';\n`;
@@ -49,12 +47,19 @@ function traverseDirectories(directory) {
     if (dirent.isDirectory()) {
       traverseDirectories(fullPath);
     } else if (dirent.isFile() && dirent.name.endsWith('.stories.portable.ts')) {
-      prepareImportAndTest(fullPath);
+      prepareImportAndTest(directory, fullPath);
     }
   });
 }
 
-export function generateTests(directory = path.join(process.cwd(), 'src')) {
+function generateTests(directory) {
   traverseDirectories(directory);
+  const testFilePath = path.join(directory, 'storybook.playwright.tsx');
   fs.writeFileSync(testFilePath, `// @ts-expect-error missing types\nimport { createTest } from '@storybook/react/experimental-playwright';\nimport { test as base } from '@playwright/experimental-ct-react17';\n\n` + imports + `\n\nconst test = createTest(base);\n\n` + tests, 'utf-8');
+  console.log("Playwright test file generated at: ", testFilePath);
+}
+
+
+module.exports = {
+  generateTests
 }

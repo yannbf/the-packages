@@ -13,9 +13,10 @@ function createPortableFile(filePath) {
     `export default composeStories(stories)\n`
 
   fs.writeFileSync(portableFilePath, content, 'utf8')
+  console.log(`Portable story file created at: ${portableFilePath}`)
 }
 
-export function traverseDirectories(directory = path.join(__dirname, 'src')) {
+function traverseDirectories(directory) {
   fs.readdirSync(directory, { withFileTypes: true }).forEach((dirent) => {
     const fullPath = path.join(directory, dirent.name)
     if (dirent.isDirectory()) {
@@ -24,4 +25,8 @@ export function traverseDirectories(directory = path.join(__dirname, 'src')) {
       createPortableFile(fullPath)
     }
   })
+}
+
+module.exports = {
+  traverseDirectories
 }
