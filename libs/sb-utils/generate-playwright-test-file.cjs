@@ -18,17 +18,22 @@ function extractNamedExports(content) {
   return matches;
 }
 
-function prepareImportAndTest(directory, filePath) {
-  const relativePath = path.relative(directory, filePath);
-  const fileName = path.basename(filePath, '.portable.ts');
-  const importName = camelCase(fileName.replace('.stories', '')) + 'Stories';
+
+function prepareImportAndTest(filePath) {
+  const relativePath = path.relative(process.cwd(), filePath);
+
+  let componentName = path.basename(filePath, '.portable.ts');
+  if (componentName === 'index.stories') {
+    componentName = path.basename(path.dirname(filePath));
+  }
+
+  const importName = camelCase(componentName) + 'Stories';
   const importStatement = `import ${importName} from './${relativePath.replace(/\\/g, '/').replace(/\.[^/.]+$/, "")}';\n`;
 
   const componentFilePath = filePath.replace(/\.portable\.ts(x)?$/, '.tsx');
   const componentContent = fs.readFileSync(componentFilePath, 'utf-8');
   const namedExports = extractNamedExports(componentContent);
 
-  const componentName = fileName.replace('.stories', '');
   let testCase = `test.describe('renders ${componentName} stories', async () => {\n`;
   namedExports.forEach(exp => {
     testCase += `  test('${exp}', async ({ mount }) => {\n` +
@@ -47,7 +52,7 @@ function traverseDirectories(directory) {
     if (dirent.isDirectory() && dirent.name !== 'node_modules') {
       traverseDirectories(fullPath);
     } else if (dirent.isFile() && (dirent.name.endsWith('.stories.portable.ts') || dirent.name.endsWith('.stories.portable.tsx'))) {
-      prepareImportAndTest(directory, fullPath);
+      prepareImportAndTest(fullPath);
     }
   });
 }

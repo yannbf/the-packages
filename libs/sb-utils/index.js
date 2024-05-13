@@ -24,10 +24,11 @@ try {
   } catch (err) { }
 }
 
-if(!renderer) {
+if (!renderer) {
   console.error('Could not detect a Storybook renderer. Please make sure you have @storybook/vue3 or @storybook/react installed, which are the supported renderers for Playwright CT portable stories.')
   process.exit(1)
 }
 
+console.log('📚 Generating portable story files:');
 generatePortableStoriesFiles(directory, renderer)
 generateTests(directory, renderer)

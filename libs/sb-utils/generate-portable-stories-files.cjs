@@ -17,7 +17,6 @@ function createPortableFile(filePath, renderer) {
 }
 
 function generatePortableStoriesFiles(directory, renderer) {
-  console.log('📚 Generating portable story files:');
   fs.readdirSync(directory, { withFileTypes: true }).forEach((dirent) => {
     const fullPath = path.join(directory, dirent.name)
     if (dirent.isDirectory() && dirent.name !== 'node_modules') {
