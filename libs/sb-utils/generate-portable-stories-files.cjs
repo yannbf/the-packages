@@ -13,10 +13,11 @@ function createPortableFile(filePath, renderer) {
     `export default composeStories(stories)\n`
 
   fs.writeFileSync(portableFilePath, content, 'utf8')
-  console.log(`📚 Portable story file created at: ${portableFilePath}`)
+  console.log(`\t✅ ${portableFilePath}`)
 }
 
 function generatePortableStoriesFiles(directory, renderer) {
+  console.log('📚 Generating portable story files:');
   fs.readdirSync(directory, { withFileTypes: true }).forEach((dirent) => {
     const fullPath = path.join(directory, dirent.name)
     if (dirent.isDirectory() && dirent.name !== 'node_modules') {

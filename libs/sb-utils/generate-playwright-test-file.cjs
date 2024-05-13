@@ -24,7 +24,7 @@ function prepareImportAndTest(directory, filePath) {
   const importName = camelCase(fileName.replace('.stories', '')) + 'Stories';
   const importStatement = `import ${importName} from './${relativePath.replace(/\\/g, '/').replace(/\.[^/.]+$/, "")}';\n`;
 
-  const componentFilePath = filePath.replace('.portable.ts', '.tsx');
+  const componentFilePath = filePath.replace(/\.portable\.ts(x)?$/, '.tsx');
   const componentContent = fs.readFileSync(componentFilePath, 'utf-8');
   const namedExports = extractNamedExports(componentContent);
 
@@ -54,8 +54,8 @@ function traverseDirectories(directory) {
 
 function generateTests(directory, renderer) {
   traverseDirectories(directory, renderer);
-  const testFilePath = path.join(directory, 'storybook.playwright.tsx');
-  fs.writeFileSync(testFilePath, `import { createTest } from '@storybook/react/experimental-playwright';\nimport { test as base } from '@playwright/experimental-ct-react17';\n\n` + imports + `\n\nconst test = createTest(base);\n\n` + tests, 'utf-8');
+  const testFilePath = path.join(directory, 'storybook-playwright.spec.tsx');
+  fs.writeFileSync(testFilePath, `import { createTest } from '@storybook/${renderer}/experimental-playwright';\nimport { test as base } from '@playwright/experimental-ct-${renderer === 'react' ? 'react' : 'vue'}';\n\n` + imports + `\n\nconst test = createTest(base);\n\n` + tests, 'utf-8');
   console.log("\n✅ Playwright test file generated at: ", testFilePath);
 }
 
