@@ -5,8 +5,8 @@
   "license": "MIT",
   "files": [
     "index.js",
-    "generate-playwright-test-file.js",
-    "generate-portable-stories-files.js",
+    "generate-playwright-test-file.cjs",
+    "generate-portable-stories-files.cjs",
     "README.md"
   ],
   "homepage": "https://github.com/yannbf/the-packages/tree/main/libs/sb-utils",
