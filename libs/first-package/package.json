@@ -1,7 +1,6 @@
 {
   "name": "@hipster/first-package",
   "version": "0.0.4",
-  "private": "true",
   "description": "",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
