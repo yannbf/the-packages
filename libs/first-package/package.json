@@ -1,6 +1,7 @@
 {
   "name": "@hipster/first-package",
   "version": "0.0.4",
+  "private": "true",
   "description": "",
   "license": "MIT",
   "main": "dist/cjs/index.js",
