@@ -3,7 +3,6 @@
   "version": "0.0.4",
   "private": "true",
   "description": "",
-  "license": "MIT",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/ts/types.d.ts",
