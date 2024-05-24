@@ -22,6 +22,7 @@
 	],
 	"scripts": {
 		"build": "tsup src/index.ts --format cjs --dts",
+		"prebuild": "tsup src/storyshots.template.ts --format esm --external @storybook/react --external @testing-library/react --external vitest --target esnext --cjsInterop",
 		"check": "tsc --noEmit"
 	},
 	"repository": {
@@ -38,6 +39,7 @@
 		"vitest": ">=0.29.0"
 	},
 	"devDependencies": {
+		"@storybook/react": "^8.1.0",
     "@testing-library/jest-dom": "^6.4.5",
     "@testing-library/react": "^15.0.7",
     "@types/node": "^20.12.11",
