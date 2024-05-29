@@ -3,13 +3,11 @@ import { transform } from './transformer'
 import { Options } from './types'
 
 const defaultOptions: Options = {
-  mode: 'stories',
-  storybookPackage: '@storybook/react',
-  testingLibraryPackage: '@testing-library/react',
+  renderer: 'react',
   snapshot: false,
 }
 
-export const storybookTest = (options?: Options): Plugin => {
+export const storybookTest = (options?: Partial<Options>): Plugin => {
   return {
     name: 'vite-plugin-storybook-test',
     enforce: 'pre',
