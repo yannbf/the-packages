@@ -11,10 +11,15 @@ export const storybookTest = (options?: Partial<Options>): Plugin => {
   return {
     name: 'vite-plugin-storybook-test',
     enforce: 'pre',
-    config(config) {
-      // @ts-expect-error fix this
+    config(config: any) {
+      config.test = config.test ?? {}
+      // add a prefix to the tests
+      config.test.name = 'storybook'
+      // enable isolate false by default for better performance
+      config.test.isolate = config.test.isolate ?? false
+      // enable globals so there's more compatibility with third party libraries e.g. vi-canvas-mock
+      config.test.globals = config.test.globals ?? true
       config.test.include = config.test.include || []
-      // @ts-expect-error fix this
       config.test.include.push('**/*.{story,stories}.?(c|m)[jt]s?(x)')
 
       return config
