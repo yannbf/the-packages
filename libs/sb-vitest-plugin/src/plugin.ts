@@ -31,7 +31,7 @@ export const storybookTest = (options?: Partial<Options>): Plugin => {
       }
     },
     resolveId(id) {
-      if (id === virtualSetupFileId) {
+      if (id.startsWith(virtualSetupFileId)) {
         return resolvedVirtualSetupFileId
       }
     },
@@ -81,8 +81,10 @@ export const storybookTest = (options?: Partial<Options>): Plugin => {
       config.test.globals = config.test.globals ?? true
       config.test.include = config.test.include || []
       config.test.include.push('**/*.{story,stories}.?(c|m)[jt]s?(x)')
-
       config.test.setupFiles = config.test.setupFiles || []
+      if (typeof config.test.setupFiles === 'string') {
+        config.test.setupFiles = [config.test.setupFiles]
+      }
       config.test.setupFiles.push(virtualSetupFileId)
 
       config.test.reporters = config.test.reporters || []
