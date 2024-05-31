@@ -53,7 +53,10 @@ export const storybookTest = (options?: Partial<Options>): Plugin => {
             task.tasks.forEach((currentTask) => {
               if (currentTask.type === 'test' && currentTask.result.state === 'fail') {
                 const currentError = currentTask.result.errors[0]
-                const storyUrl = 'http://localhost:6006/?path=/story/' + currentTask.meta.storyId
+                let storyUrl = 'http://localhost:6006/?path=/story/' + currentTask.meta.storyId
+                if (currentTask.meta.hasPlayFunction) {
+                  storyUrl = storyUrl + '&addonPanel=storybook/interactions/panel'
+                }
                 currentError.message = 
                   '\\n\x1B[34m' + 
                   'Click to debug the error directly in Storybook: ' + storyUrl + '\x1B[39m' + 

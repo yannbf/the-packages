@@ -99,6 +99,7 @@ export async function transform({
       const testCode = [
         `test('${name} [' + ${composedStory}.id + ']', async ({ task }) => {`,
         `  task.meta.storyId = ${composedStory}.id;`,
+        `  task.meta.hasPlayFunction = !!${composedStory}.play;`,
         `  await ${composedStory}.load();`,
         `  ${metadata.render(composedStory)}`,
         `  await ${composedStory}.play?.();`,
