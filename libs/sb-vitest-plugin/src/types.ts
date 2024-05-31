@@ -1,4 +1,5 @@
 export type Options = {
-  renderer: 'react' | 'vue3'
+  configDir?: string
+  renderer: 'react' | 'vue3' | 'svelte'
   snapshot?: boolean
 }
