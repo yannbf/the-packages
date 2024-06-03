@@ -9,4 +9,5 @@ export type UserOptions = {
 
 export type InternalOptions = UserOptions & {
   storybookPort: number
+  debug: boolean
 }

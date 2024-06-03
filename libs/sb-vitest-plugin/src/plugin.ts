@@ -22,6 +22,10 @@ export const storybookTest = (options?: Partial<UserOptions>): Plugin => {
 
   const finalOptions = { ...defaultOptions, ...options } as InternalOptions
 
+  if(process.env.DEBUG) {
+    finalOptions.debug = true
+  }
+
   // TARGET_URL is used in CI to point to a deployed Storybook URL
   const storybookUrl = finalOptions.storybookUrl || `http://localhost:6006`
   finalOptions.storybookPort = parseInt(
