@@ -109,7 +109,7 @@ export const storybookTest = (options?: Partial<UserOptions>): Plugin => {
         config.test.reporters = config.test.reporters ?? ['default']
 
         // Send story status to Storybook via websockets
-        config.test.reporters.push(new StorybookStatusReporter())
+        config.test.reporters.push(new StorybookStatusReporter(finalOptions))
         // Start Storybook CLI in background if not already running
         config.test.reporters.push(new StorybookCliReporter(finalOptions))
       }
