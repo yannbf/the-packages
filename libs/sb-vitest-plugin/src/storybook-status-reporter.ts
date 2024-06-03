@@ -1,5 +1,6 @@
 import { Reporter } from 'vitest/reporters'
 import { TaskResultPack, Vitest } from 'vitest'
+import { InternalOptions } from './types'
 
 const stateToStatusMap = {
   run: 'pending',
@@ -8,7 +9,13 @@ const stateToStatusMap = {
 } as any
 
 export class StorybookStatusReporter implements Reporter {
+  options: InternalOptions
   ctx!: Vitest
+
+  constructor(options: InternalOptions) {
+    this.options = options
+  }
+
   onInit(ctx: Vitest): void {
     this.ctx = ctx
   }
@@ -20,9 +27,19 @@ export class StorybookStatusReporter implements Reporter {
         if (task && task.type === 'test') {
           const status = stateToStatusMap[task.result?.state as string]
           const meta = (task.meta || pack[2]) as { storyId: string }
-          console.log(meta.storyId, status)
-          // TODO:
-          // sendStatusToStorybook(meta.storyId, status)
+          const url = this.options.storybookUrl
+          if (process.env.DEBUG) {
+            console.log(
+              `Updating status for story ${meta.storyId} to ${status} in ${url}/experimental-status-api`
+            )
+          }
+          fetch(`${url}/experimental-status-api`, {
+            method: 'POST',
+            body: JSON.stringify({
+              data: { status, storyId: meta.storyId },
+              id: 'vitest-plugin',
+            }),
+          })
         }
       }
     }
