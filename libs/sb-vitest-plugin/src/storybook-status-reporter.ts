@@ -2,6 +2,7 @@ import { Reporter } from 'vitest/reporters'
 import { TaskResultPack, TaskState, Vitest } from 'vitest'
 import { API_StatusUpdate, API_StatusValue } from '@storybook/types'
 import { InternalOptions } from './types'
+import { log } from './utils'
 
 
 const stateToStatusMap = {
@@ -27,6 +28,7 @@ export class StorybookStatusReporter implements Reporter {
 
   private async requestStorybookStatusUpdate(data: API_StatusUpdate) {
     try {
+      log('Updating status', data)
       await fetch(`${this.options.storybookUrl}/experimental-status-api`, {
         method: 'POST',
         body: JSON.stringify({
@@ -39,7 +41,7 @@ export class StorybookStatusReporter implements Reporter {
       })
     } catch (err) {
       if (this.options.debug) {
-        console.log('Error updating status', err)
+        log('Error updating status', err)
         throw err
       }
     }
@@ -70,7 +72,7 @@ export class StorybookStatusReporter implements Reporter {
         }
       }
     }
-
+    
     this.requestStorybookStatusUpdate(batchData)
   }
 }

@@ -3,10 +3,11 @@ import { exec, ChildProcess } from 'child_process'
 import { Reporter } from 'vitest/reporters'
 import { InternalOptions } from './types'
 import { Vitest } from 'vitest'
+import { log } from './utils'
 
 let storybookProcess: ChildProcess | null = null
 
-const startStorybookIfNeeded = (options: InternalOptions) => {
+const startStorybookIfNeeded = async (options: InternalOptions) => {
   const port = options.storybookPort
 
   const server = net.createServer()
@@ -17,32 +18,35 @@ const startStorybookIfNeeded = (options: InternalOptions) => {
     }
   })
 
+  // TODO: make async
   server.once('listening', () => {
     server.close()
-    storybookProcess = exec(
-      `${options.storybookScript} --ci`,
-      (error, stdout, stderr) => {
-        if (error) {
-          if (error.message.includes('not found')) {
-            console.warn(
-              `\nCould not spawn Storybook with command: "${options.storybookScript}".\nIf you have a custom Storybook script, please specify via the plugin "storybookScript" option.`
-            )
-          } else {
-            console.warn(
-              `\nAn error occurred starting Storybook. Please fix it and rerun the test command : ${error.message}`
-            )
-            console.warn(stderr || stdout)
-          }
-          return
+    const script = `${options.storybookScript} --ci`
+    log(`Running the Storybook command: ${script}`)
+    storybookProcess = exec(script, (error, stdout, stderr) => {
+      log('exec output:', { error, stdout, stderr })
+      if (error) {
+        if (error.message.includes('not found')) {
+          console.warn(
+            `\nCould not spawn Storybook with command: "${options.storybookScript}".\nIf you have a custom Storybook script, please specify via the plugin "storybookScript" option.`
+          )
+        } else {
+          console.warn(
+            `\nAn error occurred starting Storybook. Please fix it and rerun the test command : ${error.message}`
+          )
+          console.warn(stderr || stdout)
         }
+        return
       }
-    )
+    })
   })
 
   server.listen(port)
 }
 
 const stopStorybook = () => {
+  log('Stopping Storybook:', storybookProcess)
+
   if (storybookProcess) {
     storybookProcess.kill('SIGINT')
     storybookProcess = null
@@ -71,7 +75,7 @@ export class StorybookCliReporter implements Reporter {
         process.exit()
       })
 
-      startStorybookIfNeeded(this.options)
+      await startStorybookIfNeeded(this.options)
     }
   }
 }

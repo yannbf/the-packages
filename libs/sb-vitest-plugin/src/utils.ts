@@ -25,3 +25,9 @@ export const PACKAGES_MAP = {
     render: (composedStory: string) => string
   }
 >
+
+export const log = (...args: any) => {
+  if (process.env.DEBUG) {
+    console.log(...args)
+  }
+}
