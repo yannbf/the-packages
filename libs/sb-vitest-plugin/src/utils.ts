@@ -1,4 +1,4 @@
-import { Options } from './types'
+import { UserOptions } from './types'
 
 export const PACKAGES_MAP = {
   react: {
@@ -18,7 +18,7 @@ export const PACKAGES_MAP = {
       `render(${composedStory}.Component, ${composedStory}.props)`,
   },
 } satisfies Record<
-  Options['renderer'],
+  UserOptions['renderer'],
   {
     storybookPackage: string
     testingLibraryPackage: string
