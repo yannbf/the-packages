@@ -91,7 +91,9 @@ export class StorybookReporter implements Reporter {
   private async requestStorybookStatusUpdate() {
     log('requestStorybookStatusUpdate!')
     if (!this.isStorybookReady) {
-      log('Storybook is not ready yet...')
+      log(
+        'Storybook is not ready yet, will save the data for the next status update...'
+      )
       return
     }
 
