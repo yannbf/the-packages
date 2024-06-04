@@ -108,7 +108,15 @@ export const storybookTest = (options?: UserOptions): any => {
         config.test.name = 'storybook'
       }
       // enable isolate false by default for better performance
-      config.test.isolate = config.test.isolate ?? false
+      if (config.test.isolate === undefined) {
+        config.test.isolate = false
+        // this is a workaround for now, Vitest has a bug where it doesn't respect the isolate option set by the plugin
+        config.test.poolOptions = config.test.poolOptions || {}
+        config.test.poolOptions.threads = config.test.poolOptions.threads || {}
+        config.test.poolOptions.forks = config.test.poolOptions.forks || {}
+        config.test.poolOptions.threads.isolate = false
+        config.test.poolOptions.forks.isolate = false
+      }
       // enable globals so there's more compatibility with third party libraries e.g. vi-canvas-mock
       config.test.globals = config.test.globals ?? true
 
