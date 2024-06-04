@@ -68,7 +68,7 @@ export const storybookTest = (options?: UserOptions): any => {
           import { setProjectAnnotations } from '${metadata.storybookPackage}'
           import { cleanup } from '${metadata.testingLibraryPackage}'
 
-          import storybookAnnotations from '${finalOptions.configDir}/preview'
+          import projectAnnotations from '${finalOptions.configDir}/preview'
 
           const modifyErrorMessage = (task) => {
             task.tasks?.forEach((currentTask) => {
@@ -95,7 +95,7 @@ export const storybookTest = (options?: UserOptions): any => {
           })
 
           process.env.DEBUG === 'storybook' && console.log('🟡 Setting project annotations from virtual setup file...')
-          setProjectAnnotations(storybookAnnotations)
+          setProjectAnnotations(projectAnnotations)
         `
         // log('Virtual setup file content:\n', setupFileContent)
         return setupFileContent
