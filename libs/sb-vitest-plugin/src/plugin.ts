@@ -2,12 +2,11 @@ import type { Plugin } from 'vite'
 import { join } from 'path'
 import { transform } from './transformer'
 import { UserOptions, InternalOptions } from './types'
-import { StorybookStatusReporter } from './storybook-status-reporter'
-import { StorybookCliReporter } from './storybook-cli-reporter'
-import { PACKAGES_MAP } from './utils'
+import { StorybookReporter } from './storybook-reporter'
+import { PACKAGES_MAP, log } from './utils'
 
 const defaultOptions: UserOptions = {
-  storybookScript: 'yarn storybook',
+  storybookScript: undefined,
   configDir: '.storybook',
   storybookUrl: 'http://localhost:6006',
   renderer: 'react',
@@ -22,12 +21,12 @@ export const storybookTest = (options?: Partial<UserOptions>): Plugin => {
 
   const finalOptions = { ...defaultOptions, ...options } as InternalOptions
 
-  if(process.env.DEBUG) {
+  if (process.env.DEBUG) {
     finalOptions.debug = true
   }
 
   // TARGET_URL is used in CI to point to a deployed Storybook URL
-  const storybookUrl = finalOptions.storybookUrl || `http://localhost:6006`
+  const storybookUrl = finalOptions.storybookUrl || defaultOptions.storybookUrl
   finalOptions.storybookPort = parseInt(
     storybookUrl.split(':').pop() || '6006',
     10
@@ -44,12 +43,12 @@ export const storybookTest = (options?: Partial<UserOptions>): Plugin => {
     load(id) {
       if (id === resolvedVirtualSetupFileId) {
         const metadata = PACKAGES_MAP[finalOptions.renderer]
-        return `
+        const setupFileContent = `
           import { afterEach, afterAll, vi } from 'vitest'
           import { setProjectAnnotations } from '${metadata.storybookPackage}'
           import { cleanup } from '${metadata.testingLibraryPackage}'
 
-          import globalStorybookConfig from '${storybookDirPath}/preview'
+          import storybookAnnotations from '${storybookDirPath}/preview'
 
           const modifyErrorMessage = (task) => {
             task.tasks.forEach((currentTask) => {
@@ -68,14 +67,18 @@ export const storybookTest = (options?: Partial<UserOptions>): Plugin => {
           }
 
           afterEach(() => {
+            process.env.DEBUG === 'storybook' && console.log('🟡 cleanup from testing library')
             cleanup()
           })
           afterAll(suite => {
             suite.tasks.forEach(modifyErrorMessage)
           })
 
-          setProjectAnnotations(globalStorybookConfig)
+          process.env.DEBUG === 'storybook' && console.log('🟡 Setting project annotations from virtual setup file...')
+          setProjectAnnotations(storybookAnnotations)
         `
+        log('Virtual setup file content:\n', setupFileContent)
+        return setupFileContent
       }
     },
     async configResolved(config: any) {
@@ -109,14 +112,16 @@ export const storybookTest = (options?: Partial<UserOptions>): Plugin => {
       }
       config.test.setupFiles.push(virtualSetupFileId)
 
-      if (!finalOptions.skipRunningStorybook) {
+      if (finalOptions.storybookScript && !finalOptions.skipRunningStorybook) {
         config.test.reporters = config.test.reporters ?? ['default']
 
-        // Send story status to Storybook via websockets
-        config.test.reporters.push(new StorybookStatusReporter(finalOptions))
         // Start Storybook CLI in background if not already running
-        config.test.reporters.push(new StorybookCliReporter(finalOptions))
+        // And send story status to Storybook's sidebar
+        config.test.reporters.push(new StorybookReporter(finalOptions))
       }
+
+      log('Final plugin options:', finalOptions)
+      log('Final Vitest config:', config)
 
       return config
     },

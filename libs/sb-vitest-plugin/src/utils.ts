@@ -27,7 +27,7 @@ export const PACKAGES_MAP = {
 >
 
 export const log = (...args: any) => {
-  if (process.env.DEBUG) {
-    console.log(...args)
+  if (process.env.DEBUG || process.env.DEBUG === 'storybook') {
+    console.log('🟡 ', ...args)
   }
 }

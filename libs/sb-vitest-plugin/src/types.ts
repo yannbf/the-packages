@@ -1,6 +1,6 @@
 export type UserOptions = {
   configDir: string
-  storybookScript: string
+  storybookScript?: string
   storybookUrl: string
   skipRunningStorybook: boolean
   renderer: 'react' | 'vue3' | 'svelte'
