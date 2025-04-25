@@ -5,8 +5,8 @@
     "libs/sb-utils"
   ],
   "devDependencies": {
-    "lerna": "^5.5.2",
-    "auto": "^11.1.6"
+    "auto": "^11.3.0",
+    "lerna": "^5.5.2"
   },
   "scripts": {
     "release": "auto shipit",
@@ -19,5 +19,6 @@
       "npm",
       "released"
     ]
-  }
+  },
+  "packageManager": "yarn@4.9.1"
 }
