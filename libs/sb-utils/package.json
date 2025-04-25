@@ -1,0 +1,21 @@
+{
+  "name": "@hipster/sb-utils",
+  "version": "0.0.1",
+  "description": "Misc Storybook utilities",
+  "license": "MIT",
+  "files": [
+    "index.js",
+    "README.md"
+  ],
+  "main": "index.js",
+  "homepage": "https://github.com/yannbf/the-packages/tree/main/libs/sb-utils",
+  "type": "commonjs",
+  "bin": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@antfu/ni": "^24.3.0",
+    "@clack/prompts": "^0.7.0"
+  }
+}
