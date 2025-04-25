@@ -124,21 +124,23 @@ async function uninstall() {
   });
 
   if (storybookDirs.length === 0 && storyFiles.length === 0 && packageJsonsWithStorybook.length === 0) {
-    note('No Storybook files or directories found in the project.', 'No Action Needed');
+    note('This project does not use Storybook, there is nothing to uninstall!', 'No Action Needed');
     outro('✨ Done');
     return;
   }
 
   // Select Storybook directories to remove
-  const selectedDirs = await multiselect({
-    message: 'Select .storybook directories to remove:',
-    options: storybookDirs.map(dir => ({
-      value: dir,
-      label: dir,
-      hint: 'Directory'
-    })),
-    initialValues: storybookDirs,
-  });
+  const selectedDirs = storybookDirs.length > 1 
+    ? await multiselect({
+        message: 'Select .storybook directories to remove:',
+        options: storybookDirs.map(dir => ({
+          value: dir,
+          label: dir,
+          hint: 'Directory'
+        })),
+        initialValues: storybookDirs,
+      })
+    : storybookDirs;
 
   if (!selectedDirs) {
     note('Uninstallation cancelled.', 'Cancelled');
@@ -147,15 +149,17 @@ async function uninstall() {
   }
 
   // Select package.json files to clean
-  const selectedPackages = await multiselect({
-    message: 'Select package.json files to clean:',
-    options: packageJsonsWithStorybook.map(pkg => ({
-      value: pkg,
-      label: pkg,
-      hint: 'Package.json'
-    })),
-    initialValues: packageJsonsWithStorybook,
-  });
+  const selectedPackages = packageJsonsWithStorybook.length > 1
+    ? await multiselect({
+        message: 'Select package.json files to clean:',
+        options: packageJsonsWithStorybook.map(pkg => ({
+          value: pkg,
+          label: pkg,
+          hint: 'Package.json'
+        })),
+        initialValues: packageJsonsWithStorybook,
+      })
+    : packageJsonsWithStorybook;
 
   if (!selectedPackages) {
     note('Uninstallation cancelled.', 'Cancelled');
@@ -195,10 +199,11 @@ async function uninstall() {
   const hasPackageChanges = Object.keys(summary.packageChanges).length > 0;
 
   if (hasPackageChanges) {
-    const shouldInstall = await confirm({
-      message: 'Storybook dependencies were removed from package.json. Run package manager install?',
-      initialValue: true,
-    });
+    const shouldInstall = true;
+    // await confirm({
+    //   message: 'Storybook dependencies were removed from package.json. Run package manager install?',
+    //   initialValue: true,
+    // });
 
     if (shouldInstall) {
       const s = spinner();
