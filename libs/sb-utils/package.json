@@ -16,5 +16,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "@antfu/ni": "^24.3.0"
   }
 }
