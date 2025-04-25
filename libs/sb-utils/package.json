@@ -5,19 +5,18 @@
   "license": "MIT",
   "files": [
     "index.js",
-    "generate-playwright-test-file.cjs",
-    "generate-portable-stories-files.cjs",
     "README.md"
   ],
   "homepage": "https://github.com/yannbf/the-packages/tree/main/libs/sb-utils",
   "type": "commonjs",
   "bin": {
-    "generate": "index.js"
+    "sb-utils": "index.js"
   },
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
-    "@antfu/ni": "^24.3.0"
+    "@antfu/ni": "^24.3.0",
+    "@clack/prompts": "^0.7.0"
   }
 }

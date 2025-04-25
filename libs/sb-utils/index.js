@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
-const fs = require("fs");
-const path = require("path");
-const { execSync, spawnSync } = require("child_process");
+const { intro, outro, note, log, spinner, confirm, multiselect } = require('@clack/prompts');
+const { execSync, spawnSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
 const bold = (message) => `\u001b[1m${message}\u001b[22m`;
 const magenta = (message) => `\u001b[35m${message}\u001b[39m`;
@@ -10,7 +11,6 @@ const blue = (message) => `\u001b[34m${message}\u001b[39m`;
 const red = (message) => `\u001b[31m${message}\u001b[39m`;
 const yellow = (message) => `\u001b[33m${message}\u001b[39m`;
 const grey = (message) => `\u001b[90m${message}\u001b[39m`;
-
 
 const summary = {
   storybookDirs: [],
@@ -26,7 +26,6 @@ function walk(dir, ignoredDirs = ["node_modules", "storybook-static", "dist", "b
     for (const file of files) {
       const fullPath = path.join(dir, file);
 
-      // Skip ignored directories
       if (fs.existsSync(fullPath) && fs.statSync(fullPath).isDirectory()) {
         if (ignoredDirs.includes(path.basename(fullPath))) continue;
         results = results.concat(walk(fullPath, ignoredDirs));
@@ -93,69 +92,167 @@ function cleanPackageJson(pkgPath) {
   }
 }
 
-// --- Start ---
-const root = getProjectRoot();
-const allPaths = walk(root);
-const allDirs = allPaths
-  .map(p => path.dirname(p))
-  .filter((v, i, arr) => arr.indexOf(v) === i); // unique
+async function uninstall() {
+  intro('🧹 Storybook Uninstaller');
 
-console.log("\n💣 Deleting .storybook directories...");
-for (const dir of allDirs) {
-  if (path.basename(dir) === ".storybook" && fs.existsSync(dir) && fs.statSync(dir).isDirectory()) {
+  const root = getProjectRoot();
+  const allPaths = walk(root);
+  const allDirs = allPaths
+    .map(p => path.dirname(p))
+    .filter((v, i, arr) => arr.indexOf(v) === i);
+
+  // Find all Storybook-related items
+  const storybookDirs = allDirs.filter(dir => 
+    path.basename(dir) === ".storybook" && 
+    fs.existsSync(dir) && 
+    fs.statSync(dir).isDirectory()
+  );
+
+  const storyFiles = allPaths.filter(file => /\.stories\.[^.]+$/.test(file));
+  const packageJsons = allPaths.filter(p => p.endsWith("package.json"));
+
+  // Filter package.json files that contain Storybook dependencies
+  const packageJsonsWithStorybook = packageJsons.filter(pkgPath => {
+    try {
+      const content = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
+      return ["dependencies", "devDependencies"].some(section => 
+        content[section] && Object.keys(content[section]).some(key => key.includes("storybook"))
+      );
+    } catch {
+      return false;
+    }
+  });
+
+  if (storybookDirs.length === 0 && storyFiles.length === 0 && packageJsonsWithStorybook.length === 0) {
+    note('No Storybook files or directories found in the project.', 'No Action Needed');
+    outro('✨ Done');
+    return;
+  }
+
+  // Select Storybook directories to remove
+  const selectedDirs = await multiselect({
+    message: 'Select .storybook directories to remove:',
+    options: storybookDirs.map(dir => ({
+      value: dir,
+      label: dir,
+      hint: 'Directory'
+    })),
+    initialValues: storybookDirs,
+  });
+
+  if (!selectedDirs) {
+    note('Uninstallation cancelled.', 'Cancelled');
+    outro('✨ Done');
+    return;
+  }
+
+  // Select package.json files to clean
+  const selectedPackages = await multiselect({
+    message: 'Select package.json files to clean:',
+    options: packageJsonsWithStorybook.map(pkg => ({
+      value: pkg,
+      label: pkg,
+      hint: 'Package.json'
+    })),
+    initialValues: packageJsonsWithStorybook,
+  });
+
+  if (!selectedPackages) {
+    note('Uninstallation cancelled.', 'Cancelled');
+    outro('✨ Done');
+    return;
+  }
+
+  const shouldProceed = await confirm({
+    message: `This command will remove the storybook directories, dependencies and ${storyFiles.length} story files. Proceed with uninstallation?`,
+    initialValue: true,
+  });
+
+  if (!shouldProceed) {
+    note('Uninstallation cancelled.', 'Cancelled');
+    outro('✨ Done');
+    return;
+  }
+
+  log.success("Deleting .storybook directories...");
+  // Delete .storybook directories
+  for (const dir of selectedDirs) {
     deleteDir(dir);
   }
-}
 
-console.log("\n🧹 Cleaning Storybook dependencies from package.json files...");
-// Clean package.json files
-const allPackageJsons = allPaths.filter((p) => p.endsWith("package.json"));
-for (const pkg of allPackageJsons) {
-  cleanPackageJson(pkg);
-}
+  log.success("Cleaning Storybook dependencies from package.json files...");
+  // Clean package.json files
+  for (const pkg of selectedPackages) {
+    cleanPackageJson(pkg);
+  }
 
-console.log("\n🚮 Deleting Storybook files...");
-// Delete *.stories.* files
-for (const file of allPaths) {
-  if (/\.stories\.[^.]+$/.test(file)) {
+  log.success("Deleting Storybook files...");
+  // Delete story files
+  for (const file of storyFiles) {
     deleteFile(file);
-    summary.storyFiles.push(file);
   }
-}
 
-const hasPackageChanges = (Object.keys(summary.packageChanges).length > 0)
+  const hasPackageChanges = Object.keys(summary.packageChanges).length > 0;
 
-if(hasPackageChanges) {
-  console.log("\n🔧 Running install command...");
-  const result = spawnSync("ni", [], { stdio: "inherit", cwd: root, shell: true });
-  if (result.error) {
-    console.error("❌ Error running package manager install:", result.error.message);
-    process.exit(1);
+  if (hasPackageChanges) {
+    const shouldInstall = await confirm({
+      message: 'Storybook dependencies were removed from package.json. Run package manager install?',
+      initialValue: true,
+    });
+
+    if (shouldInstall) {
+      const s = spinner();
+      s.start('Running install command...');
+      const result = spawnSync("ni", [], { stdio: "ignore", cwd: root, shell: true });
+      if (result.error) {
+        log.error('Error running package manager install: ' + result.error.message);
+        process.exit(1);
+      } else {
+        s.stop('Install command completed');
+      }
+    }
   }
-}
 
-// --- Show Summary ---
-console.log("\n📦 Summary of Changes");
+  log.info(`All done! Here's the summary of changes:`);
 
-if (hasPackageChanges) {
-  console.log(`\n${bold`  📁 package.json changes:`}`);
-  for (const [file, deps] of Object.entries(summary.packageChanges)) {
-    console.log(`  - ${blue(file)}`);
-    console.log(`    • ${deps.length} deps removed: ${deps.join(", ")}`);
+  // Show summary
+  if (hasPackageChanges) {
+    note('Package.json changes:');
+    for (const [file, deps] of Object.entries(summary.packageChanges)) {
+      console.log(`${grey('│')} ${blue(file)}`);
+      console.log(`${grey('│')}   • ${deps.length} deps removed: ${deps.join(", ")}`);
+    }
   }
-} else {
-  console.log(`\n${bold`  📁 package.json changes: none`}`);
+
+  if (summary.storybookDirs.length > 0) {
+    note('.storybook directories removed:');
+    summary.storybookDirs.forEach(dir => console.log(`${grey('│')}  • ${blue(dir)}`));
+  }
+
+  if (summary.storyFiles.length > 0) {
+    note(`Storybook files (*.stories.*) removed: ${summary.storyFiles.length}`);
+  }
+
+  outro('✨ Storybook uninstallation complete!');
 }
 
-if (summary.storybookDirs.length > 0) {
-  console.log(`\n${bold`  🗂️  .storybook directories removed:`}`);
-  summary.storybookDirs.forEach(dir => console.log(`  - ${blue(dir)}`));
-} else {
-  console.log(`\n${bold`  🗂️  .storybook directories removed: none`}  `);
+// Handle command line arguments
+const command = process.argv[2];
+
+if (!command || command === '--help' || command === '-h') {
+  console.log(`
+Usage: sb-utils <command>
+
+Commands:
+  uninstall    Remove Storybook from your project
+  --help, -h   Show this help message
+  `);
+  process.exit(0);
 }
 
-if (summary.storyFiles.length > 0) {
-  console.log(`\n${bold`  📝 Storybook files (*.stories.*) removed:`} ${summary.storyFiles.length}`);
+if (command === 'uninstall') {
+  uninstall().catch(console.error);
 } else {
-  console.log(`\n${bold`  📝 Storybook files (*.stories.*) removed: none`}`);
-}
+  console.error(`Unknown command: ${command}`);
+  process.exit(1);
+} 
