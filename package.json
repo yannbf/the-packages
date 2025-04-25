@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "workspaces": [
-    "libs/sb-vitest-plugin"
+    "libs/sb-utils"
   ],
   "devDependencies": {
     "lerna": "^5.5.2",
