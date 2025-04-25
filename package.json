@@ -1,12 +1,9 @@
 {
   "name": "root",
   "private": true,
-  "workspaces": [
-    "libs/sb-utils"
-  ],
   "devDependencies": {
     "auto": "^11.3.0",
-    "lerna": "^5.5.2"
+    "lerna": "^8.2.2"
   },
   "scripts": {
     "release": "auto shipit",
@@ -20,5 +17,5 @@
       "released"
     ]
   },
-  "packageManager": "yarn@4.9.1"
+  "packageManager": "pnpm@8.15.4"
 }
