@@ -1,6 +1,6 @@
 {
   "name": "@hipster/mdx2-issue-checker",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Wrapper around remark-cli to make it easier to check for MDX v2 syntax issues",
   "license": "MIT",
   "files": [
@@ -10,8 +10,8 @@
   "homepage": "https://github.com/yannbf/the-packages/tree/main/libs/mdx2-issue-checker",
   "type": "module",
   "dependencies": {
-    "remark-mdx": "^2.2.1",
     "remark": "^14.0.2",
+    "remark-mdx": "^2.2.1",
     "unified-args": "^10.0.0"
   },
   "bin": {
