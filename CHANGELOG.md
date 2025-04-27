@@ -2,6 +2,19 @@
 
 #### ⚠️ Pushed to `main`
 
+- `@hipster/sb-utils@0.0.4`
+  - add improvements and testing playground ([@yannbf](https://github.com/yannbf))
+
+#### Authors: 1
+
+- Yann Braga ([@yannbf](https://github.com/yannbf))
+
+---
+
+# (Sun Apr 27 2025)
+
+#### ⚠️ Pushed to `main`
+
 - fix ci ([@yannbf](https://github.com/yannbf))
 - `@hipster/sb-utils@0.0.3`
   - add yes flag ([@yannbf](https://github.com/yannbf))
