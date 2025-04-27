@@ -2,6 +2,20 @@
 
 #### ⚠️ Pushed to `main`
 
+- fix ci ([@yannbf](https://github.com/yannbf))
+- `@hipster/sb-utils@0.0.3`
+  - add yes flag ([@yannbf](https://github.com/yannbf))
+
+#### Authors: 1
+
+- Yann Braga ([@yannbf](https://github.com/yannbf))
+
+---
+
+# (Sun Apr 27 2025)
+
+#### ⚠️ Pushed to `main`
+
 - `@hipster/mdx2-issue-checker@0.0.8`, `@hipster/sb-utils@0.0.2`
   - fix ([@yannbf](https://github.com/yannbf))
 
