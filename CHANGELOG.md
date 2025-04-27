@@ -1,3 +1,16 @@
+# (Sun Apr 27 2025)
+
+#### ⚠️ Pushed to `main`
+
+- `@hipster/mdx2-issue-checker@0.0.8`, `@hipster/sb-utils@0.0.2`
+  - fix ([@yannbf](https://github.com/yannbf))
+
+#### Authors: 1
+
+- Yann Braga ([@yannbf](https://github.com/yannbf))
+
+---
+
 # (Mon Oct 03 2022)
 
 ### Release Notes
