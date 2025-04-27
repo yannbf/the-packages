@@ -130,17 +130,19 @@ async function uninstall() {
   }
 
   // Select Storybook directories to remove
-  const selectedDirs = storybookDirs.length > 1 
-    ? await multiselect({
-        message: 'Select .storybook directories to remove:',
-        options: storybookDirs.map(dir => ({
-          value: dir,
-          label: dir,
-          hint: 'Directory'
-        })),
-        initialValues: storybookDirs,
-      })
-    : storybookDirs;
+  const selectedDirs = isYes 
+    ? storybookDirs 
+    : storybookDirs.length > 1 
+      ? await multiselect({
+          message: 'Select .storybook directories to remove:',
+          options: storybookDirs.map(dir => ({
+            value: dir,
+            label: dir,
+            hint: 'Directory'
+          })),
+          initialValues: storybookDirs,
+        })
+      : storybookDirs;
 
   if (!selectedDirs) {
     note('Uninstallation cancelled.', 'Cancelled');
@@ -149,17 +151,19 @@ async function uninstall() {
   }
 
   // Select package.json files to clean
-  const selectedPackages = packageJsonsWithStorybook.length > 1
-    ? await multiselect({
-        message: 'Select package.json files to clean:',
-        options: packageJsonsWithStorybook.map(pkg => ({
-          value: pkg,
-          label: pkg,
-          hint: 'Package.json'
-        })),
-        initialValues: packageJsonsWithStorybook,
-      })
-    : packageJsonsWithStorybook;
+  const selectedPackages = isYes
+    ? packageJsonsWithStorybook
+    : packageJsonsWithStorybook.length > 1
+      ? await multiselect({
+          message: 'Select package.json files to clean:',
+          options: packageJsonsWithStorybook.map(pkg => ({
+            value: pkg,
+            label: pkg,
+            hint: 'Package.json'
+          })),
+          initialValues: packageJsonsWithStorybook,
+        })
+      : packageJsonsWithStorybook;
 
   if (!selectedPackages) {
     note('Uninstallation cancelled.', 'Cancelled');
@@ -167,10 +171,12 @@ async function uninstall() {
     return;
   }
 
-  const shouldProceed = await confirm({
-    message: `This command will remove the storybook directories, dependencies and ${storyFiles.length} story files. Proceed with uninstallation?`,
-    initialValue: true,
-  });
+  const shouldProceed = isYes 
+    ? true 
+    : await confirm({
+        message: `This command will remove the storybook directories, dependencies and ${storyFiles.length} story files. Proceed with uninstallation?`,
+        initialValue: true,
+      });
 
   if (!shouldProceed) {
     note('Uninstallation cancelled.', 'Cancelled');
@@ -243,14 +249,18 @@ async function uninstall() {
 
 // Handle command line arguments
 const command = process.argv[2];
+const isYes = process.argv.includes('--yes');
 
 if (!command || command === '--help' || command === '-h') {
   console.log(`
-Usage: sb-utils <command>
+Usage: sb-utils <command> [options]
 
 Commands:
   uninstall    Remove Storybook from your project
   --help, -h   Show this help message
+
+Options:
+  --yes        Don't ask for prompts
   `);
   process.exit(0);
 }
