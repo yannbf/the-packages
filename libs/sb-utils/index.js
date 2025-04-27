@@ -55,6 +55,11 @@ function getProjectRoot() {
   }
 }
 
+function getRelativePath(absolutePath) {
+  const root = getProjectRoot();
+  return path.relative(root, absolutePath);
+}
+
 function deleteDir(targetPath) {
   if (fs.existsSync(targetPath)) {
     fs.rmSync(targetPath, { recursive: true, force: true });
@@ -109,6 +114,18 @@ async function uninstall() {
   );
 
   const storyFiles = allPaths.filter(file => /\.stories\.[^.]+$/.test(file));
+  const mdxFiles = allPaths.filter(file => {
+    if (file.endsWith('.mdx')) {
+      try {
+        const content = fs.readFileSync(file, 'utf-8');
+        return content.includes('@storybook/');
+      } catch {
+        return false;
+      }
+    }
+    return false;
+  });
+
   const packageJsons = allPaths.filter(p => p.endsWith("package.json"));
 
   // Filter package.json files that contain Storybook dependencies
@@ -123,7 +140,7 @@ async function uninstall() {
     }
   });
 
-  if (storybookDirs.length === 0 && storyFiles.length === 0 && packageJsonsWithStorybook.length === 0) {
+  if (storybookDirs.length === 0 && storyFiles.length === 0 && mdxFiles.length === 0 && packageJsonsWithStorybook.length === 0) {
     note('This project does not use Storybook, there is nothing to uninstall!', 'No Action Needed');
     outro('✨ Done');
     return;
@@ -137,7 +154,7 @@ async function uninstall() {
           message: 'Select .storybook directories to remove:',
           options: storybookDirs.map(dir => ({
             value: dir,
-            label: dir,
+            label: getRelativePath(dir),
             hint: 'Directory'
           })),
           initialValues: storybookDirs,
@@ -158,7 +175,7 @@ async function uninstall() {
           message: 'Select package.json files to clean:',
           options: packageJsonsWithStorybook.map(pkg => ({
             value: pkg,
-            label: pkg,
+            label: getRelativePath(pkg),
             hint: 'Package.json'
           })),
           initialValues: packageJsonsWithStorybook,
@@ -174,7 +191,7 @@ async function uninstall() {
   const shouldProceed = isYes 
     ? true 
     : await confirm({
-        message: `This command will remove the storybook directories, dependencies and ${storyFiles.length} story files. Proceed with uninstallation?`,
+        message: `This command will remove the storybook directories, dependencies, ${storyFiles.length} story ${storyFiles.length === 1 ? 'file' : 'files'} and ${mdxFiles.length} MDX docs. Proceed with uninstallation?`,
         initialValue: true,
       });
 
@@ -184,21 +201,38 @@ async function uninstall() {
     return;
   }
 
-  log.success("Deleting .storybook directories...");
+  log.success(`Removing ${selectedDirs.length} .storybook ${selectedDirs.length === 1 ? 'directory' : 'directories'}...`);
   // Delete .storybook directories
   for (const dir of selectedDirs) {
     deleteDir(dir);
   }
 
-  log.success("Cleaning Storybook dependencies from package.json files...");
+  // Count total Storybook dependencies
+  let totalDeps = 0;
+  for (const pkg of selectedPackages) {
+    const content = JSON.parse(fs.readFileSync(pkg, "utf-8"));
+    ["dependencies", "devDependencies"].forEach((section) => {
+      if (content[section]) {
+        totalDeps += Object.keys(content[section]).filter(key => key.includes("storybook")).length;
+      }
+    });
+  }
+
+  log.success(`Removing ${totalDeps} Storybook ${totalDeps === 1 ? 'dependency' : 'dependencies'} from ${selectedPackages.length} package.json ${selectedPackages.length === 1 ? 'file' : 'files'}...`);
   // Clean package.json files
   for (const pkg of selectedPackages) {
     cleanPackageJson(pkg);
   }
 
-  log.success("Deleting Storybook files...");
+  log.success(`Removing ${storyFiles.length} story ${storyFiles.length === 1 ? 'file' : 'files'}...`);
   // Delete story files
   for (const file of storyFiles) {
+    deleteFile(file);
+  }
+
+  log.success(`Removing ${mdxFiles.length} MDX ${mdxFiles.length === 1 ? 'doc' : 'docs'}...`);
+  // Delete MDX files
+  for (const file of mdxFiles) {
     deleteFile(file);
   }
 
@@ -230,18 +264,22 @@ async function uninstall() {
   if (hasPackageChanges) {
     note('Package.json changes:');
     for (const [file, deps] of Object.entries(summary.packageChanges)) {
-      console.log(`${grey('│')} ${blue(file)}`);
-      console.log(`${grey('│')}   • ${deps.length} deps removed: ${deps.join(", ")}`);
+      console.log(`${grey('│')} • ${blue(getRelativePath(file))}`);
+      console.log(`${grey('│')}   ◦ ${deps.length} deps removed: ${deps.join(", ")}`);
     }
   }
 
   if (summary.storybookDirs.length > 0) {
     note('.storybook directories removed:');
-    summary.storybookDirs.forEach(dir => console.log(`${grey('│')}  • ${blue(dir)}`));
+    summary.storybookDirs.forEach(dir => console.log(`${grey('│')}  • ${blue(getRelativePath(dir))}`));
   }
 
   if (summary.storyFiles.length > 0) {
-    note(`Storybook files (*.stories.*) removed: ${summary.storyFiles.length}`);
+    note(`${summary.storyFiles.length} ${summary.storyFiles.length === 1 ? 'file' : 'files'} removed`, `Stories:`);
+  }
+
+  if (mdxFiles.length > 0) {
+    note(`${mdxFiles.length} ${mdxFiles.length === 1 ? 'file' : 'files'} removed`, `MDX docs:`);
   }
 
   outro('✨ Storybook uninstallation complete!');
