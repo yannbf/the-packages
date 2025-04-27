@@ -13,8 +13,7 @@
   "author": "Yann Braga <yannbf@gmail.com>",
   "auto": {
     "plugins": [
-      "npm",
-      "released"
+      "npm"
     ]
   },
   "packageManager": "pnpm@8.15.4"
