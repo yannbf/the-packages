@@ -188,10 +188,15 @@ async function uninstall() {
     return;
   }
 
+  const shouldRemoveStories = !keepStories;
+  const confirmMessage = shouldRemoveStories
+    ? `This command will remove the storybook directories, dependencies, ${storyFiles.length} story ${storyFiles.length === 1 ? 'file' : 'files'} and ${mdxFiles.length} MDX docs. Proceed with uninstallation?`
+    : `This command will remove the storybook directories and dependencies but keep the ${storyFiles.length} story ${storyFiles.length === 1 ? 'file' : 'files'} and ${mdxFiles.length} MDX docs. Proceed with uninstallation?`;
+
   const shouldProceed = isYes 
     ? true 
     : await confirm({
-        message: `This command will remove the storybook directories, dependencies, ${storyFiles.length} story ${storyFiles.length === 1 ? 'file' : 'files'} and ${mdxFiles.length} MDX docs. Proceed with uninstallation?`,
+        message: confirmMessage,
         initialValue: true,
       });
 
@@ -224,16 +229,18 @@ async function uninstall() {
     cleanPackageJson(pkg);
   }
 
-  log.success(`Removing ${storyFiles.length} story ${storyFiles.length === 1 ? 'file' : 'files'}...`);
-  // Delete story files
-  for (const file of storyFiles) {
-    deleteFile(file);
-  }
+  if (shouldRemoveStories) {
+    log.success(`Removing ${storyFiles.length} story ${storyFiles.length === 1 ? 'file' : 'files'}...`);
+    // Delete story files
+    for (const file of storyFiles) {
+      deleteFile(file);
+    }
 
-  log.success(`Removing ${mdxFiles.length} MDX ${mdxFiles.length === 1 ? 'doc' : 'docs'}...`);
-  // Delete MDX files
-  for (const file of mdxFiles) {
-    deleteFile(file);
+    log.success(`Removing ${mdxFiles.length} MDX ${mdxFiles.length === 1 ? 'doc' : 'docs'}...`);
+    // Delete MDX files
+    for (const file of mdxFiles) {
+      deleteFile(file);
+    }
   }
 
   const hasPackageChanges = Object.keys(summary.packageChanges).length > 0;
@@ -274,12 +281,14 @@ async function uninstall() {
     summary.storybookDirs.forEach(dir => console.log(`${grey('│')}  • ${blue(getRelativePath(dir))}`));
   }
 
-  if (summary.storyFiles.length > 0) {
-    note(`${summary.storyFiles.length} ${summary.storyFiles.length === 1 ? 'file' : 'files'} removed`, `Stories:`);
-  }
+  if (shouldRemoveStories) {
+    if (summary.storyFiles.length > 0) {
+      note(`${summary.storyFiles.length} ${summary.storyFiles.length === 1 ? 'file' : 'files'} removed`, `Stories:`);
+    }
 
-  if (mdxFiles.length > 0) {
-    note(`${mdxFiles.length} ${mdxFiles.length === 1 ? 'file' : 'files'} removed`, `MDX docs:`);
+    if (mdxFiles.length > 0) {
+      note(`${mdxFiles.length} ${mdxFiles.length === 1 ? 'file' : 'files'} removed`, `MDX docs:`);
+    }
   }
 
   outro('✨ Storybook uninstallation complete!');
@@ -287,7 +296,8 @@ async function uninstall() {
 
 // Handle command line arguments
 const command = process.argv[2];
-const isYes = process.argv.includes('--yes');
+const isYes = process.argv.includes('--yes') || process.argv.includes('-y');
+const keepStories = process.argv.includes('--keep-stories') || process.argv.includes('-k');
 
 if (!command || command === '--help' || command === '-h') {
   console.log(`
@@ -298,7 +308,8 @@ Commands:
   --help, -h   Show this help message
 
 Options:
-  --yes        Don't ask for prompts
+  --yes, -y         Don't ask for prompts
+  --keep-stories, -k    Keep .stories and MDX files when uninstalling
   `);
   process.exit(0);
 }
